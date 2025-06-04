@@ -1,13 +1,13 @@
 {
   "name": "gtm-server-render",
   "version": "1.0.0",
-  "description": "Google Tag Manager Server container chạy trên Render.com",
+  "description": "Google Tag Manager Server container chạy trên Render",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "build": "echo 'No build needed'"
+    "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "http-proxy-middleware": "^2.0.6"
   }
 }
