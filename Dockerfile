@@ -1,11 +1,1 @@
-FROM node:18
-
-WORKDIR /app
-
-COPY package.json ./
-RUN npm install
-
-COPY . .
-
-EXPOSE 8080
-CMD ["node", "server.js"]
+FROM gcr.io/cloud-tagging-10302018/gtm-cloud-image:3.0.0
