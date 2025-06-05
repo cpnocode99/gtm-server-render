@@ -1,7 +1,7 @@
 {
-  "name": "gtm-server-render",
+  "name": "gtm-server-wrapper",
   "version": "1.0.0",
-  "description": "Google Tag Manager Server container chạy trên Render",
+  "description": "Forward GTM Web Container events to GTM Server Container (like Stape)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
