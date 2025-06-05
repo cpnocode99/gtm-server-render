@@ -1,37 +1,34 @@
-const express = require('express');
-const { createProxyMiddleware } = require('http-proxy-middleware');
+const express = require("express");
+const { createProxyMiddleware } = require("http-proxy-middleware");
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// Đọc GTM Container ID từ biến môi trường (đặt trong Render Dashboard)
 const GTM_CONTAINER_ID = process.env.GTM_CONTAINER_ID;
-
 if (!GTM_CONTAINER_ID) {
-  console.error('❌ Thiếu GTM_CONTAINER_ID. Vui lòng cấu hình trong Render Environment Variables.');
+  console.error("❌ GTM_CONTAINER_ID is not set");
   process.exit(1);
 }
 
-// Proxy toàn bộ request đến GTM server endpoint
-app.use(
-  '/',
-  createProxyMiddleware({
-    target: `https://gtm-server-tag.google.com/`,
-    changeOrigin: true,
-    pathRewrite: (path, req) => {
-      return `/${GTM_CONTAINER_ID}${path}`;
-    },
-    onProxyReq: (proxyReq, req, res) => {
-      console.log(`[GTM-Proxy] ${req.method} ${req.url}`);
-    }
-  })
-);
+const targetUrl = `https://gtm-server-tag.google.com/${GTM_CONTAINER_ID}`;
 
-// Endpoint ping cron job để giữ server không sleep
-app.get('/healthy', (req, res) => {
-  res.status(200).send('OK');
+// Forward các route thường dùng
+const routesToProxy = ["/collect", "/g/collect", "/api/event", "/debug", "/r/collect"];
+
+routesToProxy.forEach((route) => {
+  app.use(route, createProxyMiddleware({
+    target: targetUrl,
+    changeOrigin: true,
+    pathRewrite: (path) => path,
+    onProxyReq: (proxyReq, req) => {
+      console.log(`[GTM] Proxy ${req.method} ${req.originalUrl}`);
+    },
+  }));
 });
 
+// Health check
+app.get("/healthy", (req, res) => res.send("OK"));
+
 app.listen(PORT, () => {
-  console.log(`🚀 GTM Server Container proxy is running on port ${PORT}`);
+  console.log(`✅ GTM Wrapper is running on port ${PORT}`);
 });
